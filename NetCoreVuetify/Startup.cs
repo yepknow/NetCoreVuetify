@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using VueCliMiddleware;
 
 namespace NetCoreVuetify
@@ -29,6 +30,7 @@ namespace NetCoreVuetify
         {
             // NOTE: PRODUCTION uses webpack static files
             app.UseStaticFiles();
+            app.UseSpaStaticFiles();
 
             // To use with EndpointRouting
             app.UseRouting();
@@ -43,13 +45,16 @@ namespace NetCoreVuetify
                 // You could wrap this proxy in either
                 // if (System.Diagnostics.Debugger.IsAttached)
                 // or a preprocessor such as #if DEBUG
-                endpoints.MapToVueCliProxy(
+                if (env.IsDevelopment())
+                {
+                    endpoints.MapToVueCliProxy(
                     "{*path}",
                     new SpaOptions { SourcePath = "ClientApp" },
                     npmScript: (System.Diagnostics.Debugger.IsAttached) ? "serve" : null,
                     regex: "Compiled successfully",
                     forceKill: true
                     );
+                }
             });
         }
     }
